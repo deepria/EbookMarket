@@ -1,0 +1,261 @@
+--일반회원 테이블--
+create table member_tbl(
+m_num number(10) not null,
+m_id varchar2(50) unique not null,
+m_pw varchar2(100) not null,
+m_name varchar2(50) not null,
+m_resident_num varchar2(20) not null,
+m_join_date date default sysdate not null,
+m_content_agree char(1) not null,
+m_privaty_agree char(1) not null,
+m_refund_agree char(1) not null,
+PRIMARY KEY (m_num)
+);
+
+--일반회원 테이블 시퀸스--
+create sequence member_seq
+start with 1
+increment by 1;
+
+
+
+--구매 테이블--
+create table purchase_tbl(
+p_num number(10) not null,
+m_num number(10) not null,
+e_num number(10) not null,
+p_download char(1) default 'N' not null,
+p_reg_date date default sysdate not null,
+p_status varchar2(50) not null,
+p_type varchar2(50) not null,
+p_total number(10) not null,
+primary key(p_num)
+);
+
+--구매 테이블 시퀸스--
+create sequence purchase_seq
+start with 1
+increment by 1;
+
+--구매 테이블 m_num fk--
+alter table purchase_tbl add constraint fk_purchase_tbl_m_num
+foreign key(m_num) references member_tbl(m_num);
+
+--구매 테이블 e_num fk--
+alter table purchase_tbl add constraint fk_purchase_tbl_e_num
+foreign key(e_num) references ebook_tbl(e_num);
+
+
+
+--판매자 회원 테이블--
+create table SELLER_TBL (
+s_num number(10) not null,
+s_id varchar2(20) unique not null,
+s_pw varchar2(100) not null,
+s_nickname varchar2(20) unique not null,
+s_profile_img varchar2(100) not null,
+s_name varchar2(20) not null,
+s_resident_num varchar2(20) not null,
+s_email varchar2(30) not null,
+s_phone varchar2(20) not null,
+s_join_date date DEFAULT sysdate,
+s_seller_agree char(1) not null,
+s_content_agree char(1) not null,
+s_privaty_agree char(1) not null,
+s_address varchar2(50) not null,
+s_bank_name varchar2(20) not null,
+s_account_num varchar2(20) not null,
+s_ah_name varchar2(20) not null,
+s_certificate_detail varchar2(3000) not null,
+s_certificate_data varchar2(100) not null,
+s_career_detail varchar2(3000) not null,
+s_career_data varchar2(100) not null,
+s_grade varchar2(10) default '4등급',
+primary key(s_num) 
+);
+
+--판매자 회원 테이블 시퀀스--
+create sequence seller_seq start with 1
+increment by 1;
+
+
+
+--정산 테이블--
+create table calculate_tbl(
+c_num number(10) not null,
+p_num number(10) not null,
+c_waiting varchar2(100) not null,
+c_reg_date date default sysdate,
+c_amount number(10) not null,
+primary key (c_num)
+);
+
+--정산 테이블 p_num fk--
+alter table calculate_tbl add constraint fk_calculate_tbl_p_num
+foreign key (p_num) references purchase_tbl(p_num);
+
+--정산 테이블 시퀀스--
+create sequence calculate_seq
+start with 1
+increment by 1;
+
+
+
+--게시물 테이블--
+create table ebook_tbl(
+e_num number(10) not null,
+s_num number(10) not null,
+e_title varchar2(50) not null,
+e_rating varchar2(10) not null,
+e_reg_date date default sysdate,
+e_post_introduce varchar2(2000) not null,
+e_coverimage_file_name varchar2(50) not null,
+e_profile varchar2(1000) not null,
+e_age_limit number(10) not null,
+e_refund_num number(10) not null,
+e_category varchar2(100) not null,
+e_writer varchar2(30) not null,
+e_price number(10) not null,
+e_attachment_file_name varchar2(50) not null,
+e_attachment_type varchar2(50) not null,
+e_thumbnail_file_name varchar2(50) not null,
+e_table_content varchar2(50) not null,
+e_view_cnt number(10) not null,
+e_sell_cnt number(10) not null,
+e_download_cnt number(10) not null,
+primary key(e_num)
+);
+
+--게시물 테이블 s_num fk--
+alter table ebook_tbl add constraint fk_ebook_tbl_s_num
+foreign key (s_num) references seller_tbl(s_num);
+
+--게시물 테이블 시퀸스--
+create sequence ebook_seq
+start with 1
+increment by 1;
+
+
+
+--일반회원 문의 게시판 테이블--
+create table member_board_tbl(
+mb_num NUMBER(10) not null,
+m_num number(10) not null,
+mb_reg_date date default sysdate,
+mb_title varchar2(500) not null,
+mb_content varchar2(4000) not null,
+mb_processing varchar2(100) not null,
+primary key (mb_num)
+);
+
+--일반회원 문의 게시판 테이블 m_num fk--
+alter table member_board_tbl add constraint fk_member_board_tbl_m_num
+foreign key (m_num) references member_tbl(m_num);
+
+--일반회원 문의 게시판 테이블 시퀸스--
+create sequence member_board_seq
+start with 1
+increment by 1;
+
+
+
+--일반 회원 답글 테이블--
+create table member_reply_tbl(
+mr_num number(10) not null,
+mb_num number(10) not null,
+mr_reg_date date default sysdate,
+mr_title varchar2(500) not null,
+mr_content varchar2(4000) not null,
+primary key (mr_num)
+);
+
+--일반 회원 답글 테이블 mb_num fk--
+alter table member_reply_tbl add constraint fk_member_reply_tbl_mb_num
+foreign key (mb_num) references member_board_tbl(mb_num);
+
+--일반 회원 답글 테이블 시퀸스--
+create sequence member_reply_seq
+start with 1
+increment by 1;
+
+
+
+--판매자 문의 게시판 테이블--
+create table seller_board_tbl(
+sb_num NUMBER(10) not null,
+s_num number(10) not null,
+sb_reg_date date default sysdate,
+sb_title varchar2(500) not null,
+sb_content varchar2(4000) not null,
+sb_processing varchar2(100) not null,
+primary key (sb_num)
+);
+
+--판매자 문의 게시판 테이블 s_num fk--
+alter table seller_board_tbl add constraint fk_seller_board_tbl_s_num
+foreign key (s_num) references seller_tbl(s_num);
+
+--판매자 문의 게시판 테이블 시퀀스--
+create sequence seller_board_seq
+start with 1
+increment by 1;
+
+
+
+--판매자 회원 답글 테이블--
+create table seller_reply_tbl(
+sr_num number(10) not null,
+sb_num number(10) not null,
+sr_reg_date date default sysdate,
+sr_title varchar2(500) not null,
+sr_content varchar2(4000) not null,
+primary key (sr_num)
+);
+
+--판매자 회원 답글 테이블 sb_num fk--
+alter table seller_reply_tbl add constraint fk_seller_reply_tbl_sb_num
+foreign key (sb_num) references seller_board_tbl(sb_num);
+
+--판매자 회원 답글 테이블 시퀀스--
+create sequence seller_reply_seq
+start with 1
+increment by 1;
+
+
+
+--일반 회원 공지사항 테이블--
+create table member_notice_tbl(
+mn_num number(10) not null,
+mn_reg_date date default sysdate,
+mn_title varchar2(500) not null,
+mn_content varchar2(4000) not null,
+primary key(mn_num)
+);
+
+--일반 회원 공지사항 테이블 시퀸스--
+create sequence member_notice_seq
+start with 1 
+increment by 1;
+
+
+
+--판매자 공지사항 테이블--
+create table seller_notice_tbl(
+sn_num number(10) not null,
+sn_reg_date date default sysdate,
+sn_title varchar2(500) not null,
+sn_content varchar2(4000) not null,
+primary key(sn_num)
+);
+
+--판매자 공지사항 테이블 시퀀스--
+create sequence seller_notice_seq
+start with 1 
+increment by 1;
+
+
+
+
+
+
+
